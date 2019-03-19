@@ -25,7 +25,10 @@ import os
 import struct
 import subprocess
 import sys
-from urllib.parse import urlparse
+try:
+    from urllib.parse import urlparse
+except ImportError:
+     from urlparse import urlparse
 
 PROTO_VERSION = 0
 HEADER_SIZE = 5
@@ -297,7 +300,10 @@ class OSTreePusher(object):
         if self.remote_user:
             ssh_cmd += ['-l', self.remote_user]
         if self.remote_port:
-            ssh_cmd += ['-p', self.remote_port]
+            ssh_cmd += ['-p %s' % self.remote_port]
+        if self.remote_repo:
+            self.remote_path = self.remote_repo
+            
         ssh_cmd += [self.remote_host, 'ostree-receive',
                     '--repo=%s' % self.remote_path]
         if self.verbose:
